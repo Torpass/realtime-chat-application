@@ -8,6 +8,9 @@ export default async function Home() {
     <main>
       <h1 className='text-bold text-4xl text-red-900'>Holiwis</h1>
       <Button>Holiwis</Button>
+      <Button variant={'default'}>Holiwis</Button>
+      <Button variant={'ghost'}>Holiwis</Button>
+      <Button >Holiwis</Button>
 
     </main>
   )
