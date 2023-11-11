@@ -6,11 +6,11 @@ import { ButtonHTMLAttributes, FC } from 'react'
 
 
 const buttonsVariants = cva(
-  'active: sacle-95 inline-flex items-center justify-center rounded-md text-sm font-medium trasnition-color focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
+  'active:scale-95 inline-flex items-center justify-center rounded-md text-sm font-medium trasnition-color focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
-        default: 'bg-slate-500 text-white hover:bg-slate-800',
+        default: 'bg-slate-900 text-white hover:bg-slate-800',
         ghost: 'bg-transparent text-slate-900 hover:bg-slate-200',
       },
       size: {
@@ -28,8 +28,7 @@ const buttonsVariants = cva(
 
 //here, we are creating a type for the props of the button component
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonsVariants>{ 
-  isLoading?: boolean,
-  
+  isLoading?: boolean
 }
 
 
