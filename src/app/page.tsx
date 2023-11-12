@@ -11,7 +11,6 @@ export default async function Home() {
       <Button variant={'default'}>Holiwis</Button>
       <Button variant={'ghost'}>Holiwis</Button>
       <Button >Holiwis</Button>
-
     </main>
   )
 }
