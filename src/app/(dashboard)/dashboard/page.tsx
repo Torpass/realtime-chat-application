@@ -10,7 +10,7 @@ const page = async ({}) => {
 
   return(<>
       <h1>Dashboard</h1>
-      <p>You are loggued as </p>
+      <p>You are loggued as {session?.user.name}</p>
 
       <LogOutButton />
     </>
