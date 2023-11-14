@@ -5,6 +5,9 @@ import { getServerSession } from 'next-auth'
 import { notFound } from 'next/navigation';
 import LogOutButton from '@/components/UI/LogOutButton'
 import { FC, ReactNode } from 'react'
+import FriendRequestSideBarOption from '@/components/FriendRequestSideBarOption';
+import { fecthRedis } from '@/helpers/redis';
+import { authOptions } from '@/lib/auth';
 
 interface layoutProps {
     children: ReactNode
@@ -30,8 +33,20 @@ const sideBardOptions:SidebarOption[] = [
 
 
 const  layout = async ({children}: layoutProps) => {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if(!session) notFound()
+
+
+    const unseenRequestsCount = 
+        await fecthRedis(
+            'smembers',
+            `user:${session.user.id}:incoming_friend_requests`
+            ) as User[]
+    
+    const totalUnseenRequestCount = unseenRequestsCount.length
+
+        
+        
 
     return (
         <div className='w-full flex h-screen '>
@@ -76,6 +91,13 @@ const  layout = async ({children}: layoutProps) => {
                                     })
                                 }
                             </ul>
+                        </li>
+
+                        <li>
+                            <FriendRequestSideBarOption
+                            sessioId={session.user.id}
+                            initialUnseenRequestsCount={totalUnseenRequestCount}
+                            />
                         </li>
 
                         <li className='-mx-6 mt-auto flex items-center'>

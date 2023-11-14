@@ -40,7 +40,6 @@ export const authOptions: NextAuthOptions = {
             const dbUser = await db.get(`user:${token.id}`) as User | null;
 
             if(!dbUser){
-                console.log('you here?')
                 token.id = user!.id;
                 return token;
             }
@@ -57,6 +56,7 @@ export const authOptions: NextAuthOptions = {
             // console.log(session, token)
 
             if(token){
+
                 session.user.id = token.id;
                 session.user.name = token.name;
                 session.user.email = token.email;

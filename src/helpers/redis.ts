@@ -7,6 +7,7 @@ export async function fecthRedis(
     command: Commands, 
     ...args:(string | number)[] )
     {
+
     const commandUrl = `${UPSTASH_REDIS_REST_URL}/${command}/${args.join('/')}`;
 
     const response = await fetch(
