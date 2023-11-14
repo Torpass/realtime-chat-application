@@ -20,6 +20,7 @@ function getClientCredentials(){
 }
 
 
+
 export const authOptions: NextAuthOptions = {
     adapter: UpstashRedisAdapter(db),
     session:{
@@ -39,6 +40,7 @@ export const authOptions: NextAuthOptions = {
             const dbUser = await db.get(`user:${token.id}`) as User | null;
 
             if(!dbUser){
+                console.log('you here?')
                 token.id = user!.id;
                 return token;
             }
@@ -51,6 +53,9 @@ export const authOptions: NextAuthOptions = {
             }
         },
         async session({session, token}){
+            // console.log('--------------------------------------------------')
+            // console.log(session, token)
+
             if(token){
                 session.user.id = token.id;
                 session.user.name = token.name;
