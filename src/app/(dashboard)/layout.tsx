@@ -8,6 +8,8 @@ import { FC, ReactNode } from 'react'
 import FriendRequestSideBarOption from '@/components/FriendRequestSideBarOption';
 import { fecthRedis } from '@/helpers/redis';
 import { authOptions } from '@/lib/auth';
+import getFriendsById from '@/helpers/getFriendsById';
+import SideBarChatList from '@/components/SideBarChatList';
 
 interface layoutProps {
     children: ReactNode
@@ -45,7 +47,7 @@ const  layout = async ({children}: layoutProps) => {
     
     const totalUnseenRequestCount = unseenRequestsCount.length
 
-        
+    const friends = await getFriendsById(session.user.id);
         
 
     return (
@@ -58,14 +60,21 @@ const  layout = async ({children}: layoutProps) => {
                         className='h-8 w-auto text-indigo-600'/>
                 </Link>
 
-                <div className='text-xs font-semibold leading-6 text-gray-600'>
-                    Your chats
-                </div>
+                {
+                    friends.length > 0 ? (
+                        <div className='text-xs font-semibold leading-6 text-gray-600'>
+                            Your chats
+                        </div>
+                    ): null
+                    
+                }
 
                 <nav className='flex flex-1 flex-col'>
                     <ul role='list' className='flex flex-1 flex-col gap-y-7'>
                         <li>
-                            //chats that this user have
+                            <SideBarChatList
+                            sessionId={session.user.id}
+                            friends={friends}/>
                         </li>
                         <li>
                             <div className='text-xs font-semibold leading-6 text-gray-400'>
@@ -90,15 +99,16 @@ const  layout = async ({children}: layoutProps) => {
                                         )
                                     })
                                 }
+
+                                <li>
+                                    <FriendRequestSideBarOption
+                                    sessioId={session.user.id}
+                                    initialUnseenRequestsCount={totalUnseenRequestCount}/>
+                                </li>
                             </ul>
                         </li>
 
-                        <li>
-                            <FriendRequestSideBarOption
-                            sessioId={session.user.id}
-                            initialUnseenRequestsCount={totalUnseenRequestCount}
-                            />
-                        </li>
+                        
 
                         <li className='-mx-6 mt-auto flex items-center'>
                             <div className='flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900'>
