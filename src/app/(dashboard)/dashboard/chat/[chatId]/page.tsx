@@ -5,7 +5,9 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { fecthRedis } from '@/helpers/redis';
 import { FC } from 'react'
-import { messageSchema } from '@/lib/validations/messages';
+import { chatSchema } from '@/lib/validations/messages';
+import Messages from '@/components/Messages';
+import MessageInput from '@/components/MessageInput';
 
 interface pageProps {
   params: {
@@ -26,11 +28,11 @@ const getMessages = async (chatId:string) => {
       const dbMessages = results.map((message) => JSON.parse(message) as Message);
       const reversedMessages = dbMessages.reverse();
 
-      const messages = messageSchema.parse(reversedMessages);
+      const messages = chatSchema.parse(reversedMessages);
 
       return messages;
   } catch (error) {
-    
+    notFound()
   }
 }
 
@@ -47,6 +49,8 @@ const page = async ({params}: pageProps) => {
 
   const chatPartnerId = user.id === userId1 ? userId2 : userId1
   const chatPartner = await (db.get(`user:${chatPartnerId}`)) as User
+
+  const initialMessages = await getMessages(chatId)
 
 
 
@@ -77,7 +81,14 @@ const page = async ({params}: pageProps) => {
                 </div>
             </div>
           </div>
-
+          <Messages 
+            initialMessages={initialMessages}
+            sessionId={session.user.id}
+          
+          />
+          <MessageInput 
+          chatPartner={chatPartner} 
+          chatId={chatId}/>
       </div>
     )
 }
