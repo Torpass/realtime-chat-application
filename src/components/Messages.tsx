@@ -1,13 +1,15 @@
 'use client'
-import { FC, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { Message } from '@/lib/validations/messages'
-import { cn } from '@/lib/utils'
+import { cn, toPusherKey } from '@/lib/utils'
 import { format } from 'date-fns'
 import Image from 'next/image'
+import { pusherClient } from '@/lib/pusher'
 
 interface MessagesProps {
   initialMessages: Message[]
   sessionId: string
+  chatId: string,
   chatPartner: User,
   sessionImg: string  | undefined | null
 }
@@ -15,6 +17,7 @@ interface MessagesProps {
 const Messages: FC<MessagesProps> = ({
     initialMessages,
     sessionId,
+    chatId,
     chatPartner,
     sessionImg
 }) => {
@@ -24,6 +27,26 @@ const Messages: FC<MessagesProps> = ({
     const formatTimeStamp = (timeStamp: number) => {
         return format(timeStamp, 'HH:mm')
     }
+
+    useEffect(() => {
+        pusherClient.subscribe(
+            toPusherKey(`chat:${chatId}`)
+        );
+
+        const messageHandler = (message: Message) => {
+            console.log('new friend request')
+            setMessages((prev) => [message, ...prev]);
+        }
+
+        pusherClient.bind('incoming-message', messageHandler);
+
+        return () => {
+            pusherClient.unsubscribe(
+                toPusherKey(`chat:${chatId}`)
+            );
+            pusherClient.unbind('incoming-message', messageHandler)
+        }
+    }, [sessionId])
 
   return(
         <div id='messages' className='flex h-full flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-tack-blue-lighter scrollbar-w-2 scrolling-touch'>
