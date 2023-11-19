@@ -47,6 +47,7 @@ const  layout = async ({children}: layoutProps) => {
     
     const totalUnseenRequestCount = unseenRequestsCount.length
 
+    console.log(totalUnseenRequestCount)
     const friends = await getFriendsById(session.user.id);
         
 
@@ -102,7 +103,7 @@ const  layout = async ({children}: layoutProps) => {
 
                                 <li>
                                     <FriendRequestSideBarOption
-                                    sessioId={session.user.id}
+                                    sessionId={session.user.id}
                                     initialUnseenRequestsCount={totalUnseenRequestCount}/>
                                 </li>
                             </ul>

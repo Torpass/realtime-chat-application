@@ -1,6 +1,7 @@
 import FriendRequests from '@/components/FriendRequests'
 import { fecthRedis } from '@/helpers/redis'
 import { authOptions } from '@/lib/auth'
+import { IncomingMessage } from 'http'
 import { getServerSession } from 'next-auth'
 import { notFound } from 'next/navigation'
 import { FC } from 'react'
@@ -33,6 +34,8 @@ const page = async () => {
             }
          })
     )
+
+    console.log(incommingSenders)
 
   return (
     <main className='pt-8 '>
