@@ -34,7 +34,6 @@ const Messages: FC<MessagesProps> = ({
         );
 
         const messageHandler = (message: Message) => {
-            console.log('new friend request')
             setMessages((prev) => [message, ...prev]);
         }
 

@@ -8,7 +8,7 @@ import Image from 'next/image';
 interface SideBarChatListProps {
     friends: User[]
     sessionId:string
-}       
+}
 
 const SideBarChatList: FC<SideBarChatListProps> = ({friends, sessionId}) => {
     const router = useRouter();
