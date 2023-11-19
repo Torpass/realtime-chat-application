@@ -1,13 +1,22 @@
 'use client'
 
-import { chatHrefConstructor } from '@/lib/utils'
+import { chatHrefConstructor, toPusherKey } from '@/lib/utils'
 import { usePathname, useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import Image from 'next/image';
+import { pusherClient } from '@/lib/pusher';
+import toast from 'react-hot-toast';
+import UnseenChatToast from './unseenChatToast';
 
 interface SideBarChatListProps {
     friends: User[]
     sessionId:string
+}
+
+interface ExtendedMessage extends Message{
+    senderName: string
+    senderImg: string
+
 }
 
 const SideBarChatList: FC<SideBarChatListProps> = ({friends, sessionId}) => {
@@ -15,6 +24,43 @@ const SideBarChatList: FC<SideBarChatListProps> = ({friends, sessionId}) => {
     const pathName = usePathname();
 
     const [unseenMessages, setunseenMessages] = useState<Message[]>([])
+
+    useEffect(() => {
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
+
+        const newFriendHandler = (data: any) => {
+            router.refresh
+        }
+
+        const chatHandler = (message: ExtendedMessage) => {
+            const sameChat = pathName !== `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`
+
+            if(!sameChat) return
+
+            console.log(message.senderImg)
+            toast.custom((t) =>(
+                <UnseenChatToast
+                    t={t}
+                    sessionId={sessionId}
+                    senderId={message.senderId}
+                    senderImg={message.senderImg}
+                    senderName={message.senderName}
+                    senderMessage={message.text}
+                />    
+            ))
+            setunseenMessages((prev) => [...prev, message])
+        }
+
+        pusherClient.bind('new_message', chatHandler)
+        pusherClient.bind('new_friend', newFriendHandler)
+
+
+        return () => {
+            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`))
+            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`))
+        }
+    }, [pathName, sessionId, router])
 
     useEffect(() => {
         if(pathName?.includes('chat')){
