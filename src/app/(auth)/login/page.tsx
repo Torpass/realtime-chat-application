@@ -7,7 +7,7 @@ import {toast} from 'react-hot-toast'
 
 
 
-const page: FC = () => {
+const Page: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     async function loginWithGoogle() {
@@ -76,4 +76,4 @@ const page: FC = () => {
   
 }
 
-export default page
+export default Page
