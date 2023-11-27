@@ -22,15 +22,16 @@ interface ExtendedMessage extends Message{
 const SideBarChatList: FC<SideBarChatListProps> = ({friends, sessionId}) => {
     const router = useRouter();
     const pathName = usePathname();
-
     const [unseenMessages, setunseenMessages] = useState<Message[]>([])
+    const [activeChat, setActiveChat] = useState<User[]>(friends)
+
 
     useEffect(() => {
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`))
         pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`))
 
-        const newFriendHandler = (data: any) => {
-            router.refresh
+        const newFriendHandler = (newFiend: User) => {
+            setActiveChat((prev) => [...prev, newFiend])
         }
 
         const chatHandler = (message: ExtendedMessage) => {

@@ -38,22 +38,39 @@ export async function POST(req: Request) {
         if(!hasFriendRequest){
             return new Response("NO_FRIEND_REQUEST", {status: 400});
         }
+        
+        const [userRaw, friendRaw] = (await Promise.all(
+            [
+                fecthRedis(
+                    'get',
+                    `user:${session.user.id}`
+                ),
+                fecthRedis(
+                    'get',
+                    `user:${idToAccept}`
+                )
+            ]
+        )) as [string, string];
+
+        const user = JSON.parse(userRaw) as User;
+        const friend = JSON.parse(friendRaw) as User;
+
+
 
         //notify added user 
-        pusherServer.trigger(toPusherKey(`user:${idToAccept}:friends`), "new_friend", {})
+        await Promise.all(
+            [
+                pusherServer.trigger(toPusherKey(`user:${idToAccept}:friends`), "new_friend", user),
+                pusherServer.trigger(toPusherKey(`user:${session.user.id}:friends`), "new_friend", friend),
+                //accept the friend request
+                db.sadd(`user:${session.user.id}:friends`, idToAccept),
+                db.sadd(`user:${idToAccept}:friends`, session.user.id),
+                 //remove the friend request
+                db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAccept)
 
+            ]
+        )
 
-        //accept the friend request
-        await db.sadd(`user:${session.user.id}:friends`, idToAccept);
-        await db.sadd(`user:${idToAccept}:friends`, session.user.id);
-
-        //remove the friend request
-        await db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAccept);
-        // create like a outlog of the friend request
-        // await db.srem(`user:${idToAccept}:outlog_friend_requests`, session.user.id);
-
-
-        console.log('you are here, well done')
         return new Response("OK");
 
     }catch(error:any){
